@@ -27,13 +27,18 @@ public static partial class Summarizer
 
     private const string ClosingPunctuation = "\"'”’)]»」』";
 
+    private static readonly char[] OpeningPunctuation = { '"', '\'', '“', '‘', '(', '[', '«', '「', '『' };
+
     private static readonly string[] Abbreviations = { "e.g.", "i.e.", "mr.", "mrs.", "ms.", "dr.", "etc.", "vs.", "u.s." };
 
-    [GeneratedRegex(@"[\p{L}\p{N}']+")]
+    // \p{M} keeps Thai/Indic combining marks inside the word; ’ (U+2019) is the
+    // apostrophe smart keyboards type ("don’t").
+    [GeneratedRegex(@"[\p{L}\p{M}\p{N}'’]+")]
     private static partial Regex WordRegex();
 
+    /// <summary>Lower-cased words; curly apostrophes are normalised to '.</summary>
     public static IReadOnlyList<string> Words(string text) =>
-        WordRegex().Matches(text).Select(m => m.Value.ToLowerInvariant().Trim('\'')).Where(w => w.Length > 0).ToList();
+        WordRegex().Matches(text).Select(m => m.Value.Replace('’', '\'').ToLowerInvariant().Trim('\'')).Where(w => w.Length > 0).ToList();
 
     /// <summary>
     /// Splits on . ! ? (and Thai/CJK full stops) followed by whitespace, without
@@ -57,7 +62,7 @@ public static partial class Summarizer
             var atBoundary = i + 1 == normalized.Length || normalized[i + 1] == ' ' || ch is '。' or '！' or '？';
             if (!atBoundary) continue;
             var sentence = current.ToString().Trim();
-            var lastWord = sentence.Split(' ').Last().ToLowerInvariant();
+            var lastWord = sentence.Split(' ').Last().TrimStart(OpeningPunctuation).ToLowerInvariant();
             if (ch == '.' && Abbreviations.Contains(lastWord)) continue;
             result.Add(sentence);
             current.Clear();
