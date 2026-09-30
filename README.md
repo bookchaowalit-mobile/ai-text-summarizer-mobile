@@ -7,13 +7,15 @@ Part of [Chaowalit Greepoke](https://bookchaowalit.com)'s 101 Portfolio Projects
 ## Status
 
 - `src/TextSummarizer.Core` — plain `net8.0` class library with the app's domain
-  logic, covered by xUnit tests in `tests/TextSummarizer.Core.Tests`. **This is the
-  verified part of the repo** and what CI builds.
-- `TextSummarizer.csproj` + XAML at the repo root — the MAUI app shell. It references
-  `TextSummarizer.Core` but **does not compile yet**: `App.xaml`, `AppShell.xaml.cs`,
-  `MauiProgram.cs`, the `Platforms/` folders and the `ExplorePage` /
-  `ProfilePage` referenced from `AppShell.xaml` are missing. See
-  [docs/UPGRADE-PLAN.md](docs/UPGRADE-PLAN.md).
+  logic, covered by xUnit tests in `tests/TextSummarizer.Core.Tests` (18 tests).
+- `TextSummarizer.csproj` + XAML at the repo root — the .NET MAUI 8 app in the standard
+  `dotnet new maui` layout (`App.xaml`, `AppShell.xaml`, `MauiProgram.cs`,
+  `Platforms/Android`, `Platforms/iOS`, `Resources/`). One page, **Summarize**: paste text, pick a sentence budget, get the extractive summary with word counts, compression, reading time and keywords.
+  State is in memory for now (see [docs/UPGRADE-PLAN.md](docs/UPGRADE-PLAN.md)).
+- Verified locally without the MAUI workload: the shared XAML/C# compiles
+  against `Microsoft.Maui.Controls` 8 with XamlC (`-p:MauiSharedCheck=true`,
+  which builds a plain `net8.0` target and skips `Platforms/`). The Android/iOS
+  heads are built by CI (`android` job) only; they have not been built locally.
 
 ## Core features (`TextSummarizer.Core`)
 
@@ -26,16 +28,17 @@ Part of [Chaowalit Greepoke](https://bookchaowalit.com)'s 101 Portfolio Projects
 
 - **Core:** C# / .NET 8 class library (nullable enabled, warnings as errors)
 - **Tests:** xUnit
-- **App (planned):** .NET MAUI 8 — Android, iOS
+- **App:** .NET MAUI 8 — Android, iOS
 
 ## Getting Started
 
 ```bash
-dotnet test tests/TextSummarizer.Core.Tests      # build core + run unit tests
+dotnet test tests/TextSummarizer.Core.Tests                                    # core + unit tests
+dotnet build TextSummarizer.csproj -c Release -p:MauiSharedCheck=true          # app XAML/C# check, no workload needed
+dotnet workload install maui-android && dotnet build TextSummarizer.csproj -f net8.0-android   # Android app (needs Android SDK + JDK 17)
 ```
 
-The MAUI app additionally needs `dotnet workload install maui` plus the
-Android SDK / Xcode once the missing app files are added.
+On Linux only the Android target is enabled; macOS/Windows also get `net8.0-ios`.
 
 ## Related
 

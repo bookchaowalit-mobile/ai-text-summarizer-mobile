@@ -25,6 +25,8 @@ public static partial class Summarizer
         "were","which","will","with","you","your","not","can","also","than","then","there","these","those","into",
     };
 
+    private const string ClosingPunctuation = "\"'”’)]»」』";
+
     private static readonly string[] Abbreviations = { "e.g.", "i.e.", "mr.", "mrs.", "ms.", "dr.", "etc.", "vs.", "u.s." };
 
     [GeneratedRegex(@"[\p{L}\p{N}']+")]
@@ -47,8 +49,13 @@ public static partial class Summarizer
             var ch = normalized[i];
             current.Append(ch);
             var terminal = ch is '.' or '!' or '?' or '。' or '！' or '？';
-            var atBoundary = i + 1 == normalized.Length || normalized[i + 1] == ' ';
-            if (!terminal || !atBoundary) continue;
+            if (!terminal) continue;
+            // Closing quotes/brackets belong to the sentence they end: He said "stop." Then...
+            while (i + 1 < normalized.Length && ClosingPunctuation.Contains(normalized[i + 1]))
+                current.Append(normalized[++i]);
+            // CJK full stops end a sentence even without a following space.
+            var atBoundary = i + 1 == normalized.Length || normalized[i + 1] == ' ' || ch is '。' or '！' or '？';
+            if (!atBoundary) continue;
             var sentence = current.ToString().Trim();
             var lastWord = sentence.Split(' ').Last().ToLowerInvariant();
             if (ch == '.' && Abbreviations.Contains(lastWord)) continue;

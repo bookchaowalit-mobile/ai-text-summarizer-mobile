@@ -1,9 +1,27 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="TextSummarizer.MainPage">
-    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="12">
-        <Label Text="Text Summarizer" FontSize="28" FontAttributes="Bold" HorizontalOptions="Center" />
-        <Label Text="Text Summarizer — Mobile app (maui)" HorizontalOptions="Center" HorizontalTextAlignment="Center" />
-    </VerticalStackLayout>
+             x:Class="TextSummarizer.MainPage"
+             Title="Summarize">
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="12">
+            <Label Text="Text Summarizer" FontSize="28" FontAttributes="Bold"
+                   SemanticProperties.HeadingLevel="Level1" />
+            <Label Text="Offline and extractive: the summary only contains sentences from your text." FontSize="12" />
+            <Editor x:Name="InputEditor" Placeholder="Paste text here" AutoSize="TextChanges" MinimumHeightRequest="160"
+                    SemanticProperties.Description="Text to summarize" />
+            <HorizontalStackLayout Spacing="8">
+                <Label Text="Sentences:" VerticalOptions="Center" />
+                <Label x:Name="CountLabel" Text="3" VerticalOptions="Center" FontAttributes="Bold" />
+                <Stepper x:Name="CountStepper" Minimum="1" Maximum="20" Value="3" Increment="1"
+                         ValueChanged="OnCountChanged"
+                         SemanticProperties.Description="Maximum number of summary sentences" />
+            </HorizontalStackLayout>
+            <Button Text="Summarize" Clicked="OnSummarizeClicked"
+                    SemanticProperties.Hint="Builds the summary from the text above" />
+            <Label x:Name="StatsLabel" FontSize="12" />
+            <Label x:Name="SummaryLabel" FontSize="16" />
+            <Label x:Name="KeywordsLabel" FontSize="12" />
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>
