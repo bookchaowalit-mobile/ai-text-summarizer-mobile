@@ -1,5 +1,22 @@
 # Text Summarizer — Mobile
 
+## Template copy
+
+This repo is one of the name-substituted .NET MAUI 8 template copies in
+`bookchaowalit-mobile`: it shares the layout (`src/<Name>.Core` class library +
+xUnit tests in `tests/` + MAUI app at the root), the build setup and the CI of
+the canonical template, [`bookchaowalit-mobile/productivity-time-tracker-mobile`](https://github.com/bookchaowalit-mobile/productivity-time-tracker-mobile).
+Only the domain code and screens differ. Consolidation or archiving is pending
+owner decision D5 (BD-033), see
+`repository-catalog/portfolio/MOBILE-CONSOLIDATION-2026-10.md` in solo-empire.
+
+CI (`.github/workflows/build.yml`, fail-closed): core build + xUnit tests, a
+workload-free XAML/C# compile check (XamlC), an Android Debug build with the
+`maui-android` workload, and the shared `security.yml` scans from
+`platform-ci-workflows` v1.1.1. The .NET SDK is pinned to the 8.0.4xx band by
+`global.json`; MAUI 8 itself is past Microsoft's support window, so a move to a
+supported MAUI version is an open owner decision.
+
 .NET MAUI app for **Text Summarizer** — condense long text into its key sentences, on the device.
 
 Part of [Chaowalit Greepoke](https://bookchaowalit.com)'s 101 Portfolio Projects.
